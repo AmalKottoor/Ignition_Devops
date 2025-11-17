@@ -87,6 +87,7 @@ jobs:
       - name: Deploy to Development Gateway
         run: |
           set -e
+          rm -rf build
           mv ignition-projects build
           chmod +x ./scripts/*.sh
           echo "Deploying to Development environment..."
@@ -121,6 +122,7 @@ jobs:
       - name: Deploy to Staging Gateway
         run: |
           set -e
+          rm -rf build
           mv ignition-projects build
           chmod +x ./scripts/*.sh
           echo "Deploying to Staging environment..."
@@ -165,6 +167,7 @@ jobs:
       - name: Deploy to Production Gateway
         run: |
           set -e
+          rm -rf build
           mv ignition-projects build
           chmod +x ./scripts/*.sh
           echo "Deploying to Production environment..."
