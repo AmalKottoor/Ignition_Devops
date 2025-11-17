@@ -1,0 +1,191 @@
+# Docker Compose for Ignition 8.3 - Multi-Environment GitFlow Setup
+# Documentation: https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+---
+services:
+  # Development Environment - deploys from 'develop' branch
+  ignition-dev:
+    image: inductiveautomation/ignition:8.3.1
+    container_name: ignition-dev
+    restart: unless-stopped
+    ports:
+      - "8088:8088"  # HTTP port
+      - "8043:8043"  # HTTPS port
+      - "8060:8060"  # Gateway Network port
+    volumes:
+      # Curated configuration mounts (additive approach)
+      - ./services/ignition-dev/config:/usr/local/bin/ignition/data/config
+      - ./services/ignition-dev/projects:/usr/local/bin/ignition/data/projects
+      - ./backups/dev:/backups
+    environment:
+      - ACCEPT_IGNITION_EULA=Y
+      - GATEWAY_ADMIN_USERNAME=admin
+      - GATEWAY_ADMIN_PASSWORD=dev-password
+      - IGNITION_EDITION=standard
+      - GATEWAY_MODULES_ENABLED=alarm-notification,reporting,opc-ua,perspective,sms-notification,symbol-factory,tag-historian,udp-tcp-drivers,web-developer
+      - IGNITION_UID=1000
+      - IGNITION_GID=1000
+      - TZ=Europe/Brussels
+      - GATEWAY_NETWORK_ENABLED=true
+    command: >
+      -n ignition-dev
+      -m 4096
+      -a 0.0.0.0
+      -h 8088
+      -s 8043
+      --
+      wrapper.java.initmemory=1024
+      -Dignition.allowunsignedmodules=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - ignition-network
+
+  # Staging Environment - deploys from 'release/*' branches
+  ignition-staging:
+    image: inductiveautomation/ignition:8.3.1
+    container_name: ignition-staging
+    restart: unless-stopped
+    ports:
+      - "8188:8088"  # HTTP port
+      - "8143:8043"  # HTTPS port
+      - "8160:8060"  # Gateway Network port
+    volumes:
+      # Curated configuration mounts (additive approach)
+      - ./services/ignition-staging/config:/usr/local/bin/ignition/data/config
+      - ./services/ignition-staging/projects:/usr/local/bin/ignition/data/projects
+      - ./backups/staging:/backups
+    environment:
+      - ACCEPT_IGNITION_EULA=Y
+      - GATEWAY_ADMIN_USERNAME=admin
+      - GATEWAY_ADMIN_PASSWORD=staging-password
+      - IGNITION_EDITION=standard
+      - GATEWAY_MODULES_ENABLED=alarm-notification,reporting,opc-ua,perspective,sms-notification,symbol-factory,tag-historian,udp-tcp-drivers,web-developer
+      - IGNITION_UID=1000
+      - IGNITION_GID=1000
+      - TZ=Europe/Brussels
+      - GATEWAY_NETWORK_ENABLED=true
+    command: >
+      -n ignition-staging
+      -m 4096
+      -a 0.0.0.0
+      -h 8088
+      -s 8043
+      --
+      wrapper.java.initmemory=1024
+      -Dignition.allowunsignedmodules=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - ignition-network
+
+  # Production Environment - deploys from 'main' branch with tags
+  ignition-prod:
+    image: inductiveautomation/ignition:8.3.1
+    container_name: ignition-prod
+    restart: unless-stopped
+    ports:
+      - "8288:8088"  # HTTP port
+      - "8243:8043"  # HTTPS port
+      - "8260:8060"  # Gateway Network port
+    volumes:
+      # Curated configuration mounts (additive approach)
+      - ./services/ignition-prod/config:/usr/local/bin/ignition/data/config
+      - ./services/ignition-prod/projects:/usr/local/bin/ignition/data/projects
+      - ./backups/prod:/backups
+    environment:
+      - ACCEPT_IGNITION_EULA=Y
+      - GATEWAY_ADMIN_USERNAME=admin
+      - GATEWAY_ADMIN_PASSWORD=prod-password
+      - IGNITION_EDITION=standard
+      - GATEWAY_MODULES_ENABLED=alarm-notification,reporting,opc-ua,perspective,sms-notification,symbol-factory,tag-historian,udp-tcp-drivers,web-developer
+      - IGNITION_UID=1000
+      - IGNITION_GID=1000
+      - TZ=Europe/Brussels
+      - GATEWAY_NETWORK_ENABLED=true
+    command: >
+      -n ignition-prod
+      -m 4096
+      -a 0.0.0.0
+      -h 8088
+      -s 8043
+      --
+      wrapper.java.initmemory=1024
+      -Dignition.allowunsignedmodules=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - ignition-network
+
+  # PostgreSQL Database for Ignition (shared or per-environment as needed)
+  postgres:
+    image: postgres:15-alpine
+    container_name: ignition-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=ignition
+      - POSTGRES_USER=ignition
+      - POSTGRES_PASSWORD=ignition-db-password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./migrations:/migrations
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ignition"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ignition-network
+
+volumes:
+  postgres-data:
+
+networks:
+  ignition-network:
+    driver: bridge

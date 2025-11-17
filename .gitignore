@@ -1,0 +1,94 @@
+# Ignition GitFlow CI/CD - Git Ignore
+
+# Build artifacts
+build/
+*.zip
+
+# Backup files
+backups/*/*
+!backups/.gitkeep
+!backups/dev/.gitkeep
+!backups/staging/.gitkeep
+!backups/prod/.gitkeep
+
+# Ignition Local Configuration (per curated mounts approach)
+# See: https://docs.inductiveautomation.com/docs/8.3/tutorials/version-control-guide
+**/config/local
+**/config/resources/local
+**/conversion-report.txt
+**/.resources/
+
+# Environment-specific deployments (not version controlled)
+# Only dev config/projects are version controlled as templates
+# Staging and prod are managed through CI/CD pipeline
+
+# Staging and Production - exclude everything
+services/ignition-staging/
+services/ignition-prod/
+
+# Dev, Staging, Prod - exclude deployed projects
+services/ignition-dev/projects/*
+!services/ignition-dev/projects/.gitkeep
+
+# Ignition runtime data (never commit these)
+ignition-data/
+**/data/var/
+**/data/local/
+**/data/logs/
+**/data/metro-keystore
+**/data/.uuid
+*.gwbk
+*.idb
+
+# Docker volumes
+.docker/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Environment-specific secrets (use Azure DevOps variables instead)
+.env
+.env.local
+secrets/
+*.key
+*.pem
+
+# Database dumps
+*.sql.gz
+*.dump
+
+# OS-specific
+Thumbs.db
+.DS_Store
+
+# Node modules (if using any Node.js tools)
+node_modules/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
