@@ -74,6 +74,9 @@ DEPLOY_DIR="$PROJECT_ROOT/services/$ENV_DIR/projects/$PROJECT_NAME"
 
 echo "Deploying to: $DEPLOY_DIR"
 
+# Create projects directory if it doesn't exist
+mkdir -p "$(dirname "$DEPLOY_DIR")"
+
 # Remove existing project if it exists
 if [ -d "$DEPLOY_DIR" ]; then
   echo "Removing existing project..."
