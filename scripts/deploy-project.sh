@@ -95,7 +95,7 @@ fi
 # Determine gateway URL based on environment
 case "$ENVIRONMENT" in
   dev|development)
-    GATEWAY_URL="http://localhost:7088"
+    GATEWAY_URL="http://localhost:8088"
     ;;
   staging)
     GATEWAY_URL="http://localhost:8188"
@@ -146,29 +146,29 @@ trigger_ignition_scans() {
   fi
 }
 
-# Restart container to reload project
-echo "Restarting gateway to load project..."
-docker restart "$CONTAINER_NAME" > /dev/null
-
-# Wait for gateway and trigger scans
-if wait_for_gateway; then
-  trigger_ignition_scans
+# Verify gateway is running
+echo "Verifying gateway health..."
+if ! curl -s -f "${GATEWAY_URL}/StatusPing" > /dev/null 2>&1; then
   echo ""
-  echo "✓ Project deployed successfully!"
+  echo "✗ Project deployment FAILED - Gateway is not responding"
   echo "  Project: $PROJECT_NAME"
   echo "  Environment: $ENVIRONMENT ($ENV_DIR)"
-  echo "  Location: services/$ENV_DIR/projects/$PROJECT_NAME"
-  echo "  Gateway URL: ${GATEWAY_URL}/web/home"
+  echo "  Gateway URL: $GATEWAY_URL"
   echo ""
-else
-  echo ""
-  echo "✗ Project deployment FAILED - Gateway did not become ready"
-  echo "  Project: $PROJECT_NAME"
-  echo "  Environment: $ENVIRONMENT ($ENV_DIR)"
-  echo "  Location: services/$ENV_DIR/projects/$PROJECT_NAME"
-  echo ""
-  echo "  The project files were copied but the gateway could not be verified."
-  echo "  You may need to manually restart the gateway or check logs."
+  echo "  The project files were copied but the gateway is not running."
+  echo "  Please ensure the Docker container is running: docker ps"
   echo ""
   exit 1
 fi
+echo "✓ Gateway is healthy"
+
+# Trigger Ignition to scan for new project
+trigger_ignition_scans
+
+echo ""
+echo "✓ Project deployed successfully!"
+echo "  Project: $PROJECT_NAME"
+echo "  Environment: $ENVIRONMENT ($ENV_DIR)"
+echo "  Location: services/$ENV_DIR/projects/$PROJECT_NAME"
+echo "  Gateway URL: ${GATEWAY_URL}/web/home"
+echo ""
