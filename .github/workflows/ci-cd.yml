@@ -108,10 +108,11 @@ jobs:
 
     steps:
       - name: Clean Previous Build Artifacts
+        shell: powershell
         run: |
           echo "Cleaning previous build artifacts..."
-          rm -rf build/
-          mkdir -p build/
+          if (Test-Path build) { Remove-Item -Recurse -Force build }
+          New-Item -ItemType Directory -Force -Path build | Out-Null
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
