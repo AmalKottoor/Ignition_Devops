@@ -13,8 +13,7 @@ git@github.com:Mustry-Solutions/ignition-83-cicd.git
 This repository implements a complete GitFlow workflow with automated deployments to multiple Ignition environments:
 
 - **Development (dev)**: Auto-deploys from `develop` branch
-- **Staging**: Auto-deploys from `release/*` branches
-- **Production**: Auto-deploys from tags on `main` branch (e.g., `v1.0.0`)
+
 
 ## Repository Structure
 
@@ -62,8 +61,7 @@ docker-compose up -d
 
 This starts three Ignition gateways:
 - **Dev**: http://localhost:8088 (admin/Test123!)
-- **Staging**: http://localhost:8188 (admin/Test123!)
-- **Production**: http://localhost:8288 (admin/Test123!)
+
 
 Plus a PostgreSQL database on port 5432.
 
@@ -181,23 +179,11 @@ Configure these in Settings → Secrets and variables → Actions:
 #### Development Environment
 - `DEV_GATEWAY_URL`: http://localhost:8088
 - `DEV_GATEWAY_USER`: admin
-- `DEV_GATEWAY_PASS`: Test123!
+- `DEV_GATEWAY_PASS`: password
 - `DEV_GATEWAY_API_KEY`: API token with config/project scan access
 - `DEV_DB_URL`: postgres://ignition:<password>@localhost:5432/ignition_dev?sslmode=disable
 
-#### Staging Environment
-- `STAGING_GATEWAY_URL`: http://localhost:8188
-- `STAGING_GATEWAY_USER`: admin
-- `STAGING_GATEWAY_PASS`: Test123!
-- `STAGING_GATEWAY_API_KEY`: API token with config/project scan access
-- `STAGING_DB_URL`: postgres://ignition:ignition-db-password@localhost:5432/ignition_staging?sslmode=disable
 
-#### Production Environment
-- `PROD_GATEWAY_URL`: http://localhost:8288
-- `PROD_GATEWAY_USER`: admin
-- `PROD_GATEWAY_PASS`: Test123!
-- `PROD_GATEWAY_API_KEY`: API token with config/project scan access
-- `PROD_DB_URL`: postgres://ignition:ignition-db-password@localhost:5432/ignition_prod?sslmode=disable
 
 **Note**: Use GitHub Environments and Secrets for secure credential management.
 
@@ -355,8 +341,7 @@ docker-compose up -d
 
 Access the gateways at:
 - Dev: http://localhost:8088/web/home
-- Staging: http://localhost:8188/web/home
-- Production: http://localhost:8288/web/home
+
 
 ## Project Development
 
