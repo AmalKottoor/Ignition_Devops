@@ -1,16 +1,18 @@
 {
   "scope": "A",
+  "description": "",
   "version": 1,
   "restricted": false,
   "overridable": true,
   "files": [
-    "config.json"
+    "config.json",
+    "backupConfig.json"
   ],
   "attributes": {
     "lastModification": {
-      "actor": "default",
-      "timestamp": "2026-01-12T09:38:00Z"
+      "actor": "admin",
+      "timestamp": "2026-02-12T09:29:20Z"
     },
-    "lastModificationSignature": "f83bc235a131ff2f51a116ffabc7c4f26960d3ca383226366dbc3f2f157158ea"
+    "lastModificationSignature": "6bf8c0922f3be16c565fbca719b26b41b32cf23f9699e7e169cac1d93bacfc75"
   }
 }

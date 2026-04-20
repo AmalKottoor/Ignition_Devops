@@ -74,6 +74,9 @@ fi
 if [ -z "$API_KEY" ]; then
   API_KEY="$API_KEY_FROM_CONFIG"
 fi
+if [ -z "$API_KEY" ] && [ -f "$PROJECT_ROOT/secrets/gateway_api_key" ]; then
+  API_KEY=$(tr -d '\r\n' < "$PROJECT_ROOT/secrets/gateway_api_key")
+fi
 
 # Use deploy_root if specified, otherwise use PROJECT_ROOT
 if [ -n "$DEPLOY_ROOT" ]; then
@@ -176,6 +179,7 @@ wait_for_gateway() {
 # Function to trigger Ignition scans
 trigger_ignition_scans() {
   echo "Triggering Ignition resource scans..."
+  local scan_failed=0
 
   # Check if API key is configured
   if [ -z "$API_KEY" ]; then
@@ -191,6 +195,7 @@ trigger_ignition_scans() {
     echo "    ✓ Config scan triggered"
   else
     echo "    ✗ Config scan failed (HTTP $CONFIG_HTTP_CODE)"
+    scan_failed=1
   fi
 
   # Trigger projects scan
@@ -200,6 +205,12 @@ trigger_ignition_scans() {
     echo "    ✓ Projects scan triggered"
   else
     echo "    ✗ Projects scan failed (HTTP $PROJECTS_HTTP_CODE)"
+    scan_failed=1
+  fi
+
+  if [ "$scan_failed" -ne 0 ]; then
+    echo "  ERROR: One or more Ignition scans failed; aborting deployment."
+    return 1
   fi
 }
 
@@ -220,7 +231,13 @@ fi
 echo "✓ Gateway is healthy"
 
 # Trigger Ignition to scan for new project
-trigger_ignition_scans
+if ! trigger_ignition_scans; then
+  echo ""
+  echo "✗ Project deployment FAILED due to scan errors"
+  echo "  Project: $PROJECT_NAME"
+  echo "  Environment: $ENVIRONMENT"
+  exit 1
+fi
 
 echo ""
 echo "✓ Project deployed successfully!"

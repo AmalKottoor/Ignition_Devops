@@ -24,7 +24,8 @@
   },
   "com.inductiveautomation.connectors.kafka": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/Kafka Connector-module.modl",
-    "onStartup": "disabled"
+    "onStartup": "enabled",
+    "certFingerprint": "0299d53c38bdbe7ca79bd6c778a5bab884e4c813"
   },
   "com.inductiveautomation.eam": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/Enterprise Administration-module.modl",
@@ -32,7 +33,8 @@
   },
   "com.inductiveautomation.eventstream": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/EventStream-module.modl",
-    "onStartup": "disabled"
+    "onStartup": "enabled",
+    "certFingerprint": "0299d53c38bdbe7ca79bd6c778a5bab884e4c813"
   },
   "com.inductiveautomation.historian": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/Historian-module.modl",
@@ -46,11 +48,13 @@
   },
   "com.inductiveautomation.jdbc.mariadb": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/MariaDB JDBC Driver Module.modl",
-    "onStartup": "disabled"
+    "onStartup": "enabled",
+    "certFingerprint": "0299d53c38bdbe7ca79bd6c778a5bab884e4c813"
   },
   "com.inductiveautomation.jdbc.mssql": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/MSSQL JDBC Driver Module.modl",
-    "onStartup": "disabled"
+    "onStartup": "enabled",
+    "certFingerprint": "0299d53c38bdbe7ca79bd6c778a5bab884e4c813"
   },
   "com.inductiveautomation.jdbc.postgresql": {
     "filename": "/usr/local/bin/ignition/user-lib/modules/PostgreSQL JDBC Driver Module.modl",
@@ -144,10 +148,10 @@
     "onStartup": "enabled",
     "certFingerprint": "0299d53c38bdbe7ca79bd6c778a5bab884e4c813"
   },
-  "com.kyvislabs.apexcharts": {
-    "filename": "/usr/local/bin/ignition/user-lib/modules/ApexCharts-2.0.1.modl",
+  "com.mussonindustrial.embr.charts": {
+    "filename": "/usr/local/bin/ignition/user-lib/modules/Embr-Charts-Ignition83-4.0.1.modl",
     "onStartup": "enabled",
-    "certFingerprint": "aa764a6b335520cf9a211b313a27829b03049af9",
-    "licenseAgreementHash": 1305859277
+    "certFingerprint": "e5a3cf3f06627c175b68b0122ac8f2c3f9c992e2",
+    "licenseAgreementHash": 3266212556
   }
 }
