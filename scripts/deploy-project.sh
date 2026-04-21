@@ -99,19 +99,9 @@ if [ -f "$TAGS_SOURCE" ] && [ -n "$TAGS_ROOT" ]; then
   echo "Deploying tags to file system..."
   mkdir -p "$TAGS_ROOT"
   cp "$TAGS_SOURCE" "$TAGS_ROOT/tags.json"
-  echo "  Tags copied to: $TAGS_ROOT/tags.json"
+  echo "  Tags copied successfully!"
 else
   echo "  No tags file or tags_root not configured — skipping"
-fi
-
-# Scans trigger karo
-if [ -n "$API_KEY" ]; then
-  curl -s -o /dev/null -w "Config scan: %{http_code}\n" \
-    -H "X-Ignition-API-Token: $API_KEY" \
-    -X POST "${GATEWAY_URL}/data/api/v1/scan/config"
-  curl -s -o /dev/null -w "Projects scan: %{http_code}\n" \
-    -H "X-Ignition-API-Token: $API_KEY" \
-    -X POST "${GATEWAY_URL}/data/api/v1/scan/projects"
 fi
 
 echo ""
