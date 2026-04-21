@@ -33,8 +33,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 DEPLOY_ROOT=$(grep "^deploy_root:" "$CONFIG_FILE" | sed 's/^deploy_root:[[:space:]]*//' | tr -d '"')
+TAGS_ROOT=$(grep "^tags_root:" "$CONFIG_FILE" | sed 's/^tags_root:[[:space:]]*//' | tr -d '"')
 GATEWAY_URL_FROM_CONFIG=$(grep "url:" "$CONFIG_FILE" | head -1 | awk '{print $2}')
-API_KEY_FROM_CONFIG=$(grep "api_key:" "$CONFIG_FILE" | head -1 | awk '{print $2}')
 
 GATEWAY_URL_ENV_VAR="${ENV_VAR_PREFIX}_GATEWAY_URL"
 GATEWAY_API_KEY_ENV_VAR="${ENV_VAR_PREFIX}_GATEWAY_API_KEY"
@@ -42,7 +42,6 @@ GATEWAY_URL="$(eval echo \$${GATEWAY_URL_ENV_VAR})"
 API_KEY="$(eval echo \$${GATEWAY_API_KEY_ENV_VAR})"
 
 if [ -z "$GATEWAY_URL" ]; then GATEWAY_URL="$GATEWAY_URL_FROM_CONFIG"; fi
-if [ -z "$API_KEY" ]; then API_KEY="$API_KEY_FROM_CONFIG"; fi
 
 if [ -n "$DEPLOY_ROOT" ]; then
   DEPLOY_TARGET="$DEPLOY_ROOT"
@@ -51,6 +50,7 @@ else
 fi
 
 echo "DEBUG: DEPLOY_TARGET=$DEPLOY_TARGET"
+echo "DEBUG: TAGS_ROOT=$TAGS_ROOT"
 
 if [ "$IS_ZIP" = true ]; then
   TEMP_DIR=$(mktemp -d)
@@ -93,46 +93,15 @@ if ! curl -s -f "${GATEWAY_URL}/StatusPing" > /dev/null 2>&1; then
 fi
 echo "Gateway is healthy"
 
-# Tags deploy karo — 3 URLs try karenge
-TAGS_FILE="$DEPLOY_DIR/ignition/tags/tags.json"
-if [ -f "$TAGS_FILE" ]; then
-  echo "Deploying tags..."
-
-  # URL 1 try karo
-  TAGS_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-    -H "X-Ignition-API-Token: $API_KEY" \
-    -H "Content-Type: application/json" \
-    -X POST "${GATEWAY_URL}/data/tag/importtags?provider=default&collisionPolicy=o&baseTagPath=" \
-    --data-binary "@$TAGS_FILE")
-  echo "  URL1 result: HTTP $TAGS_HTTP_CODE"
-
-  # Agar 404 aaya toh URL 2 try karo
-  if [ "$TAGS_HTTP_CODE" = "404" ]; then
-    TAGS_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-      -H "X-Ignition-API-Token: $API_KEY" \
-      -H "Content-Type: application/json" \
-      -X POST "${GATEWAY_URL}/data/tag/import?provider=default&collisionPolicy=o" \
-      --data-binary "@$TAGS_FILE")
-    echo "  URL2 result: HTTP $TAGS_HTTP_CODE"
-  fi
-
-  # Agar abhi bhi 404 aaya toh URL 3 try karo
-  if [ "$TAGS_HTTP_CODE" = "404" ]; then
-    TAGS_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-      -H "X-Ignition-API-Token: $API_KEY" \
-      -H "Content-Type: application/json" \
-      -X POST "${GATEWAY_URL}/data/api/v1/tag/import?provider=default" \
-      --data-binary "@$TAGS_FILE")
-    echo "  URL3 result: HTTP $TAGS_HTTP_CODE"
-  fi
-
-  if [ "$TAGS_HTTP_CODE" = "200" ]; then
-    echo "  Tags deployed successfully"
-  else
-    echo "  Tags deploy failed (HTTP $TAGS_HTTP_CODE) — continuing anyway"
-  fi
+# Tags seedha file system mein copy karo
+TAGS_SOURCE="$DEPLOY_DIR/ignition/tags/tags.json"
+if [ -f "$TAGS_SOURCE" ] && [ -n "$TAGS_ROOT" ]; then
+  echo "Deploying tags to file system..."
+  mkdir -p "$TAGS_ROOT"
+  cp "$TAGS_SOURCE" "$TAGS_ROOT/tags.json"
+  echo "  Tags copied to: $TAGS_ROOT/tags.json"
 else
-  echo "  No tags file found — skipping"
+  echo "  No tags file or tags_root not configured — skipping"
 fi
 
 # Scans trigger karo
