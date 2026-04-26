@@ -12,7 +12,7 @@ ENVIRONMENT_INPUT=$1
 if [ -z "$ENVIRONMENT_INPUT" ]; then
   echo "Error: Environment not specified"
   echo "Usage: ./scripts/deploy.sh <environment>"
-  echo "Available environments: local, dev, staging, prod"
+  echo "Available environments: Dev"
   exit 1
 fi
 
@@ -22,7 +22,7 @@ case "$ENVIRONMENT_INPUT" in
     ENV_VAR_PREFIX="LOCAL"
     ;;
   dev|development)
-    ENVIRONMENT="dev"
+    ENVIRONMENT="Dev"
     ENV_VAR_PREFIX="DEV"
     ;;
   staging)
@@ -126,7 +126,7 @@ echo "Step 3: Deploying gateway configuration..."
 CONFIG_SOURCE="$DEPLOY_TARGET/config/gateway"
 if [ -d "$CONFIG_SOURCE" ]; then
   case "$ENVIRONMENT" in
-    dev|development)
+    Dev|development)
       ENV_DIR="ignition-dev"
       ;;
     staging)
