@@ -1,12 +1,13 @@
 ---
-# Local Development Environment Configuration
-environment: local
-deploy_root: /Users/jasperlouage/_docker/ignition-83-cicd-mustry
+# Dev Development Environment Configuration
+environment: Dev
+deploy_root: "C:/Program Files/Inductive Automation/Ignition/data/projects"
+tags_root: "C:/Program Files/Inductive Automation/Ignition/data/config/resources/core/ignition/tag-definition/default"
 gateway:
-  url: http://localhost:9088
+  url: http://localhost:8088
   username: admin
-  container_name: ignition-local
-  backup_path: ./backups/local
+  container_name: ignition-dev
+  backup_path: ./backups/dev
 database:
   host: localhost
   port: 5432
