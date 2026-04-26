@@ -89,7 +89,7 @@ jobs:
     needs: [build, test-pylib]
     if: github.ref == 'refs/heads/develop'
     environment:
-      name: development
+      name: Dev
 
     steps:
       - name: Clean Previous Build Artifacts
